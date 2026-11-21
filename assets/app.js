@@ -149,7 +149,7 @@
 
   /* Scrollspy --------------------------------------------- */
   const navLinks = $$(".site-nav a");
-  const spySections = ["work", "experience", "credentials", "recognition", "skills", "references"]
+  const spySections = ["work", "experience", "credentials", "recognition", "skills"]
     .map((id) => document.getElementById(id))
     .filter(Boolean);
 
