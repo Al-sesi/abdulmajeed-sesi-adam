@@ -104,6 +104,64 @@
     window.setTimeout(() => window.print(), 80);
   });
 
+  /* Copy phone number ------------------------------------- */
+  const copyPhoneButton = $("[data-copy-phone]");
+
+  if (copyPhoneButton) {
+    const copyLabel = $("[data-copy-label]", copyPhoneButton);
+    const copyStatus = $("[data-copy-status]");
+    const phoneNumber = copyPhoneButton.getAttribute("data-copy-phone") || "";
+    let copyTimer;
+
+    const writeClipboard = async (text) => {
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (error) {
+          /* Fall back to the selection method below. */
+        }
+      }
+
+      const field = document.createElement("textarea");
+      field.value = text;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.top = "0";
+      field.style.left = "-9999px";
+      document.body.appendChild(field);
+      field.select();
+
+      let copied = false;
+      try {
+        copied = document.execCommand("copy");
+      } catch (error) {
+        copied = false;
+      }
+      field.remove();
+      return copied;
+    };
+
+    copyPhoneButton.addEventListener("click", async () => {
+      const copied = await writeClipboard(phoneNumber);
+
+      if (copyLabel) copyLabel.textContent = copied ? "Copied" : "Copy failed";
+      copyPhoneButton.classList.toggle("is-copied", copied);
+
+      if (copyStatus) {
+        copyStatus.textContent = copied
+          ? "Phone number copied to clipboard."
+          : "Could not copy automatically. The number is +234 704 921 6077.";
+      }
+
+      window.clearTimeout(copyTimer);
+      copyTimer = window.setTimeout(() => {
+        if (copyLabel) copyLabel.textContent = "Copy number";
+        copyPhoneButton.classList.remove("is-copied");
+      }, 2400);
+    });
+  }
+
   /* Recognition filters ----------------------------------- */
   const filterButtons = $$(".filter-btn");
   const recCards = $$(".rec-card");
